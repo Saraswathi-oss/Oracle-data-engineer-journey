@@ -128,17 +128,6 @@ Mentor style preferences:
 - RAG = AI answering from your own data
 - Vector = numbers representing meaning
 
-Now Do This
 
-Go to your GitHub repo Oracle-data-engineer-journey
-Click "Add file" → "Create new file"
-Name it: my_study_context.md
-Paste everything above
-Click "Commit changes"
-
-
-Every Week Update This File
-When you complete a day → change ⬜ to ✅
-Your GitHub becomes your live study diary that recruiters can also see your consistency and dedication.
 
 From tomorrow — new chat, paste this file, say "I am Saraswathi, continue as my mentor" — we go! 🚀Sonnet 4.6Claude is 
