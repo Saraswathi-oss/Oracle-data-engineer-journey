@@ -1,0 +1,140 @@
+-- ================================================
+-- Oracle Fusion AI Engineer Journey
+-- Week 1 - Day 2: RANK, DENSE_RANK, ROW_NUMBER, LAG, LEAD
+-- Author: Saraswathi
+-- ================================================
+
+-- Setup: Create sales table
+CREATE TABLE sales (
+    rep_name VARCHAR2(50),
+    region   VARCHAR2(50),
+    revenue  NUMBER
+);
+
+INSERT INTO sales VALUES ('Priya',   'South', 90000);
+INSERT INTO sales VALUES ('Meera',   'South', 90000);
+INSERT INTO sales VALUES ('Asha',    'South', 75000);
+INSERT INTO sales VALUES ('Ravi',    'North', 85000);
+INSERT INTO sales VALUES ('Kiran',   'North', 85000);
+INSERT INTO sales VALUES ('Suresh',  'North', 70000);
+INSERT INTO sales VALUES ('Divya',   'East',  95000);
+INSERT INTO sales VALUES ('Lakshmi', 'East',  80000);
+INSERT INTO sales VALUES ('Anand',   'East',  80000);
+
+COMMIT;
+
+-- Challenge 1
+-- Rank sales reps within each region by revenue descending
+-- ROW_NUMBER: always unique, no tie handling
+-- RANK: ties get same rank, next rank skips
+-- DENSE_RANK: ties get same rank, no skip
+SELECT 
+    s.*,
+    ROW_NUMBER() OVER (PARTITION BY region ORDER BY revenue DESC) AS rw_num,
+    RANK()       OVER (PARTITION BY region ORDER BY revenue DESC) AS rnk,
+    DENSE_RANK() OVER (PARTITION BY region ORDER BY revenue DESC) AS dn_rnk
+FROM sales s;
+
+-- Challenge 2
+-- Return top 2 reps per region including all tied reps at rank 2
+-- DENSE_RANK used because it does not skip ranks on ties
+-- dn_rnk < 3 returns rank 1 and rank 2 including all ties
+SELECT rep_name, region, dn_rnk FROM (
+    SELECT 
+        s.*,
+        DENSE_RANK() OVER (PARTITION BY region ORDER BY revenue DESC) AS dn_rnk
+    FROM sales s
+) WHERE dn_rnk < 3;
+
+-- Challenge 3
+-- Find exactly one top earner per department, no duplicates even on ties
+-- ROW_NUMBER used because it always assigns unique rank
+-- Even tied rows get different numbers, guaranteeing one row per dept
+SELECT * FROM (
+    SELECT 
+        s.*,
+        ROW_NUMBER() OVER (PARTITION BY region ORDER BY revenue DESC) AS rw_num
+    FROM sales s
+) WHERE rw_num = 1;
+
+-- LAG/LEAD Challenge
+-- Show each rep's revenue, previous rep revenue, next rep revenue
+-- and difference between current and previous revenue
+-- LAG looks at previous row, LEAD looks at next row within partition
+-- First row in each region has NULL for prv_sal so diff is also NULL
+SELECT rep_name, revenue, prv_sal, lead_sal, (revenue - prv_sal) AS diff FROM (
+    SELECT 
+        s.*,
+        LAG(revenue)  OVER (PARTITION BY region ORDER BY revenue DESC) AS prv_sal,
+        LEAD(revenue) OVER (PARTITION BY region ORDER BY revenue DESC) AS lead_sal
+    FROM sales s
+);
+
+
+-- ================================================
+-- Oracle Fusion AI Engineer Journey
+-- Week 1 - Day 3: CTEs (Common Table Expressions)
+-- Author: Saraswathi
+-- ================================================
+
+-- Setup: Create employees table
+CREATE TABLE employees (
+    emp_id  NUMBER,
+    dept_id NUMBER,
+    salary  NUMBER
+);
+
+INSERT INTO employees VALUES (1, 10, 90000);
+INSERT INTO employees VALUES (2, 10, 90000);
+INSERT INTO employees VALUES (3, 10, 75000);
+INSERT INTO employees VALUES (4, 20, 85000);
+INSERT INTO employees VALUES (5, 20, 85000);
+INSERT INTO employees VALUES (6, 20, 70000);
+INSERT INTO employees VALUES (7, 30, 95000);
+INSERT INTO employees VALUES (8, 30, 80000);
+
+COMMIT;
+
+-- Challenge 1
+-- Find departments where average salary is above 80000
+-- CTE used instead of subquery for readability
+WITH avg_sal AS (
+    SELECT dept_id, AVG(salary) AS avgsal
+    FROM employees
+    GROUP BY dept_id
+)
+SELECT dept_id, avgsal
+FROM avg_sal
+WHERE avgsal > 80000;
+
+-- Challenge 2
+-- Find employees earning above their department average
+-- Chained CTEs: CTE1 calculates dept average, CTE2 joins and filters
+-- CTE2 references CTE1 directly like a table
+WITH
+avg_sal1 AS (
+    SELECT dept_id, AVG(salary) AS avgsal
+    FROM employees
+    GROUP BY dept_id
+),
+avg_sal2 AS (
+    SELECT ev.emp_id, ev.dept_id, ev.salary, avg_sal1.avgsal
+    FROM employees ev
+    JOIN avg_sal1 ON avg_sal1.dept_id = ev.dept_id
+    WHERE ev.salary > avg_sal1.avgsal
+)
+SELECT * FROM avg_sal2;
+
+-- Challenge 3
+-- Find top earner per department, no duplicates even on ties
+-- CTE wraps ROW_NUMBER window function
+-- ROW_NUMBER guarantees exactly one row per dept regardless of ties
+WITH cte1 AS (
+    SELECT 
+        e.*,
+        ROW_NUMBER() OVER (PARTITION BY dept_id ORDER BY salary DESC) AS rw_nm
+    FROM employees e
+)
+SELECT emp_id, dept_id, salary
+FROM cte1
+WHERE rw_nm = 1;
