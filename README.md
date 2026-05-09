@@ -1,6 +1,24 @@
-# Oracle-data-engineer-journey
-My Journey towards my goal
-week1/day1_window_function.sql
-week1/day2_rank_functions.sql
-week1/day3_ctes.sql
-week1/day4_query_optimization.sql
+# Oracle Fusion AI Data Engineer Journey 🚀
+
+## About Me
+- Name: Saraswathi
+- Experience: 4 years OAC + ODI
+- Goal: Oracle Fusion AI Data Engineer
+- Timeline: 16 weeks
+
+## Weekly Progress
+### Week 1 — Advanced SQL + FDI Introduction
+- Day 1: Window functions ✅
+- Day 2: RANK, DENSE_RANK, ROW_NUMBER, LAG, LEAD ✅
+- Day 3: CTEs ✅
+- Day 4: Query Optimization + Indexes ✅
+- Day 5: In progress
+
+## Tech Stack
+Oracle SQL | OAC | ODI | FDI | Python | Oracle 26ai | ADW
+
+## Target Roles
+- Oracle FDI Consultant
+- Oracle AI Data Engineer
+- Oracle Analytics Architect
+- Oracle Fusion AI Data Specialist
