@@ -12,7 +12,9 @@
 - Day 2: RANK, DENSE_RANK, ROW_NUMBER, LAG, LEAD ✅
 - Day 3: CTEs ✅
 - Day 4: Query Optimization + Indexes ✅
-- Day 5: In progress
+- Day 5: Combined Challenge ✅
+- Day 6: Week 1 Review ✅
+- Day 7: SQL Interview Questions ✅
 
 ## Tech Stack
 Oracle SQL | OAC | ODI | FDI | Python | Oracle 26ai | ADW
